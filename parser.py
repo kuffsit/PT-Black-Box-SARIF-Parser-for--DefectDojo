@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class PtblackboxsarifParser(object):
     """
-    Парсер для SARIF отчетов PT Black Box
+  SARIF PT Black Box
     """
 
     def get_scan_types(self):
@@ -23,10 +23,10 @@ class PtblackboxsarifParser(object):
         try:
             data = json.load(file)
 
-            # Создаем словарь правил
+            
             rules_dict = {rule.get('id'): rule for rule in data['runs'][0]['tool']['driver']['rules']}
 
-            # Обрабатываем результаты
+            
             for result in data['runs'][0]['results']:
                 rule_id = result.get('ruleId')
                 rule = rules_dict.get(rule_id, {})
@@ -37,7 +37,7 @@ class PtblackboxsarifParser(object):
                 description = rule.get('fullDescription', {}).get('text', 'Описание отсутствует.')
                 title = rule.get('name', 'Без названия')
 
-                # Извлечение местоположения
+                
                 locations = result.get('locations', [])
                 if locations:
                     physical_location = locations[0].get('physicalLocation', {})
@@ -54,14 +54,14 @@ class PtblackboxsarifParser(object):
                     file_path = None
                     line = None
 
-                # Создание объекта Finding
+                
                 finding = Finding(
                     title=title,
                     description=description,
                     severity=severity,
                     file_path=file_path,
-                    line=line,  # Изменено с line_number на line
-                    cve=rule_id,  # Используем ruleId как идентификатор
+                    line=line,  
+                    cve=rule_id, 
                     test=test
                 )
                 findings.append(finding)
@@ -72,7 +72,7 @@ class PtblackboxsarifParser(object):
 
         except Exception as e:
             logger.error(f"Ошибка при парсинге SARIF отчета PT Black Box: {e}")
-            raise  # Повторно выбрасываем исключение
+            raise 
 
         return findings
 
